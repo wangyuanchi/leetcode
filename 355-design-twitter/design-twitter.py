@@ -36,6 +36,7 @@ class Twitter:
                 continue
 
             user_tweet = self.tweets[user] # ListNode
+            traversed_tweets_for_user = 0
             while user_tweet:
                 if len(heap) < 10:
                     heapq.heappush(heap, (user_tweet.time, user_tweet.tweetId))
@@ -47,6 +48,11 @@ class Twitter:
                         break
                 
                 user_tweet = user_tweet.next
+                traversed_tweets_for_user += 1
+
+                # if traversed 10 tweets already, can go to the next user
+                if traversed_tweets_for_user == 10:
+                    break
         
         # heap has size 10 but not sorted
         sorted_heap = sorted(heap, key=lambda x: x[0], reverse=True)
