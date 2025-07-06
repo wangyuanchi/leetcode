@@ -24,8 +24,8 @@ class Solution:
                     if found:
                         return True
                 visited[row][col] = False # Backtracking
-            else:
-                return False
+            
+            return False
 
         for row in range(len(board)):
             for col in range(len(board[row])):
