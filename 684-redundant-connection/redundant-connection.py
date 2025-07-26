@@ -4,27 +4,19 @@ class Solution:
         parent = [n for n in range(len(edges) + 1)]
         weight = [1 for n in range(len(edges) + 1)]
 
-        def find(n1, n2):
-            n1copy, n2copy = n1, n2
-            # Get to the highest common ancestor
-            while n1 != parent[n1]:
-                n1 = parent[n1]
-            while n2 != parent[n2]:
-                n2 = parent[n2]
-            
-            # Path compression
-            parent[n1copy] = n1
-            parent[n2copy] = n2
+        # Do path compressions (not actually "changing edges", just changing pointers)
+        # Weights are unaffected
+        def hca(n):
+            if parent[n] != n:
+                parent[n] = hca(parent[n])
+            return parent[n]
 
-            return n1 == n2            
+        def find(n1, n2):
+            return hca(n1) == hca(n2)            
 
         def union(n1, n2):
-            # Get to the highest common ancestor
-            while n1 != parent[n1]:
-                n1 = parent[n1]
-            while n2 != parent[n2]:
-                n2 = parent[n2]
-            
+            n1, n2 = hca(n1), hca(n2)     
+                   
             # Weighted union
             if weight[n1] < weight[n2]:
                 parent[n1] = n2
