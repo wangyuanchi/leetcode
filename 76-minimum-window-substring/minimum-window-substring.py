@@ -1,37 +1,38 @@
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        tDict, window = {}, {}
-        neededKeys, satisfiedKeys = 0, 0
-        for char in t:
-            if char in tDict:
-                tDict[char] += 1
+        freq = {}
+        for c in t:
+            if c not in freq:
+                freq[c] = 1
             else:
-                window[char] = 0
-                tDict[char] = 1
-                neededKeys += 1
+                freq[c] += 1
 
-        # First, find a valid substring
-        # Then, to find a possible shorter substring,
-        # shorten the substring from the left until it violates
-        l, r = 0, 0 # s[l:r]
-        shortest_l, shortest_r, shortest_length = 0, 0, 2**31 - 1
-        # The "or" part is to satisfy the last left pointer slide
-        while r < len(s) or neededKeys == satisfiedKeys:
-            if neededKeys != satisfiedKeys:
-                if s[r] in window:
-                    window[s[r]] += 1
-                    if window[s[r]] == tDict[s[r]]:
-                        satisfiedKeys += 1
-                r += 1
-            else: # Current s[l:r] is a valid substring
-                if r - l < shortest_length:
-                    shortest_length = r - l
-                    shortest_l, shortest_r = l, r
-                
-                if s[l] in window:
-                    window[s[l]] -= 1
-                    if window[s[l]] == tDict[s[l]] - 1:
-                        satisfiedKeys -= 1
+        mismatched = len(freq)
+        l_res_index, r_res_index = 0, len(s)
+        l = 0
+
+        for r in range(len(s)):
+            r_char = s[r]
+            if r_char not in freq:
+                continue
+            freq[r_char] -= 1
+
+            if freq[r_char] == 0:
+                mismatched -= 1
+
+            if mismatched > 0:
+                continue
+
+            while mismatched == 0:
+                if r - l < r_res_index - l_res_index:
+                    l_res_index, r_res_index = l, r
+
+                l_char = s[l]
                 l += 1
 
-        return s[shortest_l:shortest_r]
+                if l_char in freq:
+                    freq[l_char] += 1
+                    if freq[l_char] == 1:
+                        mismatched += 1
+
+        return "" if r_res_index == len(s) else s[l_res_index:r_res_index + 1]
