@@ -1,27 +1,30 @@
 class Solution:
     def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
-        # Step 1: Insert
-        added = False
-
-        for i in range(len(intervals)):
-            if intervals[i][0] > newInterval[0]:
-                intervals.insert(i, newInterval)
-                added = True
-                break
-        
-        if not added:
-            intervals.append(newInterval)
-
-        # Step 2: Merge
-        start, end = 1, 0
-        while start < len(intervals) and end < len(intervals) - 1:
-            if intervals[start][0] > intervals[end][1]:
-                start += 1
-                end += 1
-                continue
+        if not intervals:
+            return [newInterval]
             
-            # Overlap
-            deleted = intervals.pop(start)
-            intervals[end][1] = max(deleted[1], intervals[end][1])
+        new_start, new_end = newInterval
+        for index, interval in enumerate(intervals):
+            start, end = interval
+            if start >= new_start:
+                intervals.insert(index, newInterval)
+                break
+            if index == len(intervals) - 1:
+                intervals.append(newInterval)
 
-        return intervals
+        output_intervals = []
+
+        l, r = 0, 1
+        while r < len(intervals):
+            l_start, l_end = intervals[l]
+            r_start, r_end = intervals[r]
+            if l_end >= r_start:
+                intervals[r] = [l_start, max(l_end, r_end)]
+            else:
+                output_intervals.append(intervals[l])
+            l += 1
+            r += 1
+        
+        output_intervals.append(intervals[l])
+
+        return output_intervals
