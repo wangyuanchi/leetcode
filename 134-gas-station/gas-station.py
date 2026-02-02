@@ -1,20 +1,25 @@
 class Solution:
     def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
-        if sum(gas) < sum(cost):
-            return -1
-
-        # Now, sum(gas) >= sum(cost)
-        # There is at least 1 solution -> There is only 1 solution
-        # Proof by prefix sum of diff
-        
         diff = []
-        for i in range(len(gas)):
+        station_count = len(gas)
+        for i in range(station_count):
             diff.append(gas[i] - cost[i])
+        diff *= 2
 
-        total, start = 0, 0
-        for i in range(len(diff)):
-            total += diff[i]
-            if total < 0:
-                total, start = 0, i + 1
+        start_index = 0
+        end_index = start_index + station_count
+        cur_gas = 0
 
-        return start
+        for i, d in enumerate(diff):
+            if start_index >= station_count:
+                return -1
+            
+            # Valid starting point if possible to reach end_index with non-negative cur gas
+            if i == end_index and cur_gas >= 0:
+                return start_index
+
+            cur_gas += d
+            if cur_gas < 0:
+                cur_gas = 0
+                start_index = i + 1
+                end_index = start_index + station_count
