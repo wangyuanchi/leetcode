@@ -1,26 +1,23 @@
 class Solution:
     def partitionLabels(self, s: str) -> List[int]:
-        freq = {}
-        for char in s:
-            if char in freq:
-                freq[char] += 1
-            else:
-                freq[char] = 1
+        furthest = {}
 
+        for index, char in enumerate(s):
+            furthest[char] = index
+
+        l, r = 0, 0
+        start = 0
         res = []
-        left = 0 # For calculating the total length
-        window = set() # The chars in the current window
-        completed = 0 # The characters that is used up completely
 
-        for right, char in enumerate(s):
-            window.add(char)
-            freq[char] -= 1
-            if freq[char] == 0:
-                completed += 1
-            if completed == len(window):
-                res.append(right - left + 1)
-                left = right + 1
-                window = set()
-                completed = 0
+        while start != len(s):
+            r = max(r, furthest[s[l]])
 
+            if l != r:
+                l += 1
+                continue
+
+            res.append(r - start + 1)
+            l, r = l + 1, r + 1
+            start = l
+        
         return res
