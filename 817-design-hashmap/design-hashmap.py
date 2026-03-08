@@ -9,7 +9,7 @@ class MyHashMap:
 
     def __init__(self):
         self.num_of_buckets = 1000
-        self.hm = []
+        self.hm = [None] * self.num_of_buckets
 
     def get_bucket(self, key: int) -> int:
         return key % self.num_of_buckets
@@ -17,11 +17,11 @@ class MyHashMap:
     def put(self, key: int, value: int) -> None:
         bucket = self.get_bucket(key)
 
-        if not self.hm:
-            self.hm.append(Node(key, value))
+        if not self.hm[bucket]:
+            self.hm[bucket] = Node(key, value)
             return
 
-        cur_node = self.hm[0]
+        cur_node = self.hm[bucket]
         while cur_node:
             if key == cur_node.key:
                 cur_node.val = value
@@ -29,16 +29,16 @@ class MyHashMap:
             cur_node = cur_node.next
 
         cur_node = Node(key, value)
-        cur_node.next = self.hm[0]
-        self.hm[0] = cur_node
+        cur_node.next = self.hm[bucket]
+        self.hm[bucket] = cur_node
 
     def get(self, key: int) -> int:
         bucket = self.get_bucket(key)
 
-        if not self.hm:
+        if not self.hm[bucket]:
             return -1
 
-        cur_node = self.hm[0]
+        cur_node = self.hm[bucket]
         
         while cur_node:
             if key == cur_node.key:
@@ -50,12 +50,12 @@ class MyHashMap:
     def remove(self, key: int) -> None:
         bucket = self.get_bucket(key)
 
-        if not self.hm or not self.hm[0]:
+        if not self.hm[bucket]:
             return
 
-        cur_node = self.hm[0]
+        cur_node = self.hm[bucket]
         if cur_node.key == key:
-            self.hm[0] = cur_node.next
+            self.hm[bucket] = cur_node.next
             return
 
         prev = None
