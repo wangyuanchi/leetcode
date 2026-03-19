@@ -9,7 +9,7 @@ class Task:
     def delete(self) -> None:
         self.isDeleted = True
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Task) -> bool:
         if self.priority != other.priority:
             return self.priority > other.priority
         
@@ -23,6 +23,11 @@ class TaskManager:
 
         for userId, taskId, priority in tasks:
             self.add(userId, taskId, priority)
+    
+    # As an extension, this can be done regularly based on requirements
+    def clear(self) -> None:
+        while self.ranking and self.ranking[0].isDeleted:
+            heapq.heappop(self.ranking)
 
     def add(self, userId: int, taskId: int, priority: int) -> None:
         task = Task(userId, taskId, priority)
@@ -39,14 +44,14 @@ class TaskManager:
         task.delete()
 
     def execTop(self) -> int:
-        while self.ranking and self.ranking[0].isDeleted:
-            heapq.heappop(self.ranking)
+        self.clear()
         
         if not self.ranking:
             return -1
 
         task = heapq.heappop(self.ranking)
         return task.userId
+        
 
 # Your TaskManager object will be instantiated and called as such:
 # obj = TaskManager(tasks)
