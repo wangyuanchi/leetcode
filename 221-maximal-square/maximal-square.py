@@ -1,32 +1,22 @@
 class Solution:
     def maximalSquare(self, matrix: List[List[str]]) -> int:
-        memo = {}
+        memo = [0] * len(matrix[0])
         max_length = 0
 
-        def dp(r, c):
-            if r < 0 or c < 0:
-                return 0
-            
-            if matrix[r][c] == "0":
-                return 0
-
-            if (r, c) in memo:
-                return memo[(r, c)]
-
-            memo[(r, c)] = min(
-                dp(r - 1, c),
-                dp(r - 1, c - 1),
-                dp(r, c - 1)
-            ) + 1
-
-            nonlocal max_length
-
-            max_length = max(max_length, memo[(r, c)])
-
-            return memo[(r, c)]
-
         for r in range(len(matrix)):
+            diag, left = 0, 0
             for c in range(len(matrix[0])):
-                dp(r, c)
+                val = matrix[r][c]
 
+                cur_length = 1 + min(
+                    diag, left, memo[c]
+                ) if val == "1" else 0
+
+                # update memo and pointers
+                diag = memo[c]
+                memo[c] = cur_length
+                left = cur_length
+
+                max_length = max(max_length, cur_length)
+        
         return max_length ** 2
