@@ -1,35 +1,25 @@
 class Solution:
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        # First, create the adjacency list for the directed graph
-        adjList = [[] for _ in range(numCourses)] # Make sure don't reference same list
-        for a, b in prerequisites:
-            adjList[b].append(a)
-        
-        # Cycle detection using 3 states
-        # If dfs onto a course that is VISITING, then there is a cycle
-        NOT_VISITED, VISITING, VISITED = 0, 1, 2
-        state = [NOT_VISITED] * numCourses
+        adjList = [[] for _ in range(numCourses)]
+        indegreeList = [0] * numCourses
+        for u, v in prerequisites:
+            adjList[v].append(u)
+            indegreeList[u] += 1
 
-        # Returns whether there is a cycle
-        def dfs(course):
-            if state[course] == VISITED:
-                return False
+        q = deque()
+        completed_courses = 0
 
-            if state[course] == VISITING:
-                return True
-            
-            state[course] = VISITING
+        for i, deg in enumerate(indegreeList):
+            if deg == 0:
+                q.append(i)
 
-            for adjCourse in adjList[course]:
-                if dfs(adjCourse):
-                    return True
+        while len(q) > 0:
+            i = q.popleft()
+            completed_courses += 1
 
-            state[course] = VISITED
-            return False
+            for neighbour in adjList[i]:
+                indegreeList[neighbour] -= 1
+                if indegreeList[neighbour] == 0:
+                    q.append(neighbour)
 
-        # Need to do a outer loop to make sure the whole graph is checked
-        for course in range(numCourses):
-            if state[course] == NOT_VISITED:
-                if dfs(course):
-                    return False
-        return True
+        return completed_courses == numCourses
