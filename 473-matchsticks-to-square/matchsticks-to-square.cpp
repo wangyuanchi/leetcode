@@ -6,6 +6,8 @@ public:
             return false;
         }
         std::array<int, 4> builder {};
+        // consider sticks 1, 1, 1, 997, if sort descending, realise impossible fast
+        std::sort(matchsticks.begin(), matchsticks.end(), std::greater<int>{});
         return backtrack(matchsticks, sum / 4, builder, 0);
     }
 
